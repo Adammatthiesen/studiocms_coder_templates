@@ -211,11 +211,14 @@ resource "coder_agent" "main" {
   arch           = data.coder_provisioner.me.arch
   os             = "linux"
   startup_script = <<-EOT
-    set -e
-    
-    curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server
-
-    /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
+    set -x
+    # Install code-server
+    curl -fsSL https://code-server.dev/install.sh | sh -s
+    code-server --auth none --port 13337 &
+    code-server --install-extension astro-build.astro-vscode
+    code-server --install-extension astro-build.houston
+    code-server --install-extension biomejs.biome
+    code-server --install-extension eamodio.gitlens
   EOT
   dir            = "/workspaces"
 
