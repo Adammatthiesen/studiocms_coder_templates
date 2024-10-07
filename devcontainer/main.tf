@@ -289,6 +289,7 @@ resource "coder_app" "code-server" {
 resource "coder_app" "astro-dev-app" {
   agent_id  = coder_agent.main.id
   slug      = "astro-dev-app"
+  display_name = "Astro Dev"
   icon      = "https://astro.build/favicon.svg"
   url       = "http://localhost:4321"
   subdomain = false
