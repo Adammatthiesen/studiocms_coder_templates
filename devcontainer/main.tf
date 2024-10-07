@@ -213,16 +213,18 @@ resource "coder_agent" "main" {
   startup_script = <<-EOT
     set -e
     # Install code-server
-    curl -fsSL https://code-server.dev/install.sh | sh -s
+    curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server
+
+    CODESERVER=/tmp/code-server/bin/code-server
 
     # Install extensions for code-server
-    code-server --install-extension astro-build.astro-vscode
-    code-server --install-extension astro-build.houston
-    code-server --install-extension biomejs.biome
-    code-server --install-extension eamodio.gitlens
+    $CODESERVER --install-extension astro-build.astro-vscode
+    $CODESERVER --install-extension astro-build.houston
+    $CODESERVER --install-extension biomejs.biome
+    $CODESERVER --install-extension eamodio.gitlens
 
     # Start code-server
-    code-server --auth none --port 13337 &
+    $CODESERVER --auth none --port 13337 >/tmp/code-server.log 2>&1 &
   EOT
   dir            = "/workspaces"
 
