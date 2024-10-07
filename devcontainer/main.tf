@@ -24,54 +24,17 @@ data "coder_external_auth" "github" {
 }
 
 data "coder_parameter" "repo" {
-  description  = "Select a repository to automatically clone and start working with a devcontainer."
+  description  = "Select an available repository to automatically clone and start working with a devcontainer."
   display_name = "Repository (auto)"
   mutable      = true
   name         = "repo"
   option {
     name        = "StudioCMS"
     icon        = "https://raw.githubusercontent.com/astrolicious/studiocms/refs/heads/main/www/assets/logo-light.svg"
-    description = "StudioCMS Repository"
+    description = "The main StudioCMS monorepo at astrolicious/studiocms"
     value       = "https://github.com/astrolicious/studiocms"
   }
-  option {
-    name        = "Custom"
-    icon        = "/emojis/1f5c3.png"
-    description = "Specify a custom repo URL below"
-    value       = "custom"
-  }
   order = 1
-}
-
-data "coder_parameter" "custom_repo_url" {
-  default      = ""
-  description  = "Optionally enter a custom repository URL, see [awesome-devcontainers](https://github.com/manekinekko/awesome-devcontainers)."
-  display_name = "Repository URL (custom)"
-  name         = "custom_repo_url"
-  mutable      = true
-  order        = 2
-}
-
-data "coder_parameter" "fallback_image" {
-  default      = "codercom/enterprise-base:ubuntu"
-  description  = "This image runs if the devcontainer fails to build."
-  display_name = "Fallback Image"
-  mutable      = true
-  name         = "fallback_image"
-  order        = 3
-}
-
-data "coder_parameter" "devcontainer_builder" {
-  description  = <<-EOF
-Image that will build the devcontainer.
-We highly recommend using a specific release as the `:latest` tag will change.
-Find the latest version of Envbuilder here: https://github.com/coder/envbuilder/pkgs/container/envbuilder
-EOF
-  display_name = "Devcontainer Builder"
-  mutable      = true
-  name         = "devcontainer_builder"
-  default      = "ghcr.io/coder/envbuilder:latest"
-  order        = 4
 }
 
 variable "cache_repo" {
@@ -95,7 +58,7 @@ variable "cache_repo_docker_config_path" {
 
 locals {
   container_name             = "coder-${data.coder_workspace_owner.me.name}-${lower(data.coder_workspace.me.name)}"
-  devcontainer_builder_image = data.coder_parameter.devcontainer_builder.value
+  devcontainer_builder_image = "ghcr.io/coder/envbuilder:latest"
   git_author_name            = coalesce(data.coder_workspace_owner.me.full_name, data.coder_workspace_owner.me.name)
   git_author_email           = data.coder_workspace_owner.me.email
   repo_url                   = data.coder_parameter.repo.value == "custom" ? data.coder_parameter.custom_repo_url.value : data.coder_parameter.repo.value
@@ -111,7 +74,7 @@ locals {
     "CODER_AGENT_URL" : replace(data.coder_workspace.me.access_url, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal"),
     # Use the docker gateway if the access URL is 127.0.0.1
     "ENVBUILDER_INIT_SCRIPT" : replace(coder_agent.main.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal"),
-    "ENVBUILDER_FALLBACK_IMAGE" : data.coder_parameter.fallback_image.value,
+    "ENVBUILDER_FALLBACK_IMAGE" : "codercom/enterprise-base:ubuntu",
     "ENVBUILDER_DOCKER_CONFIG_BASE64" : try(data.local_sensitive_file.cache_repo_dockerconfigjson[0].content_base64, ""),
     "ENVBUILDER_PUSH_IMAGE" : var.cache_repo == "" ? "" : "true",
     "ENVBUILDER_INSECURE" : "${var.insecure_cache_repo}",
