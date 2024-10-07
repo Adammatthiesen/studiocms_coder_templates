@@ -294,12 +294,6 @@ resource "coder_app" "astro-dev-app" {
   subdomain = false
   share     = "authenticated"
 
-  healthcheck {
-    url       = "http://localhost:4321/healthz"
-    interval  = 10
-    threshold = 30
-  }
-
 }
 
 resource "coder_metadata" "container_info" {
