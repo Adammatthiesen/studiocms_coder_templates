@@ -214,15 +214,6 @@ resource "coder_agent" "main" {
     set -e
     
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server
-    
-    mkdir -p ~/.vscode-server/extensions
-
-    extensions=( $(sed 's/\/\/.*$//g' */.devcontainer/devcontainer.json | jq -r -M '[.customizations.vscode.extensions[]?, .extensions[]?] | .[]' ) )
-    if [ "$${extensions[0]}" != "" ] && [ "$${extensions[0]}" != "null" ]; then
-      for extension in "$${extensions[@]}"; do
-        /tmp/code-server/bin/code-server --extensions-dir ~/.vscode-server/extensions --install-extension "$extension"
-      done
-    fi
 
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
   EOT
