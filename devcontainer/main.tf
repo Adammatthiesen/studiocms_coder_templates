@@ -61,7 +61,7 @@ locals {
   devcontainer_builder_image = "ghcr.io/coder/envbuilder:latest"
   git_author_name            = coalesce(data.coder_workspace_owner.me.full_name, data.coder_workspace_owner.me.name)
   git_author_email           = data.coder_workspace_owner.me.email
-  repo_url                   = data.coder_parameter.repo.value == "custom" ? data.coder_parameter.custom_repo_url.value : data.coder_parameter.repo.value
+  repo_url                   = data.coder_parameter.repo.value
   # The envbuilder provider requires a key-value map of environment variables.
   envbuilder_env = {
     # ENVBUILDER_GIT_URL and ENVBUILDER_CACHE_REPO will be overridden by the provider
