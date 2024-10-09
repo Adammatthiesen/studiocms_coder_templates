@@ -285,18 +285,6 @@ resource "coder_app" "code-server" {
   }
 }
 
-# node app
-resource "coder_app" "astro-dev-app" {
-  agent_id  = coder_agent.main.id
-  slug      = "astro-dev-app"
-  display_name = "Astro Dev"
-  icon      = "https://astro.build/favicon.svg"
-  url       = "http://localhost:4321"
-  subdomain = false
-  share     = "authenticated"
-
-}
-
 resource "coder_metadata" "container_info" {
   count       = data.coder_workspace.me.start_count
   resource_id = coder_agent.main.id
